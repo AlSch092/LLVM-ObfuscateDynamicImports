@@ -1,0 +1,42 @@
+cmake_minimum_required(VERSION 3.13)
+project(DynamicImportObfuscatorPass LANGUAGES CXX)
+
+set(CMAKE_VERBOSE_MAKEFILE ON)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_package(LLVM REQUIRED CONFIG)
+message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
+message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
+
+include_directories(${LLVM_INCLUDE_DIRS})
+add_definitions(${LLVM_DEFINITIONS})
+
+set(SOURCES DynamicImportObfuscatorPass.cpp)
+
+add_library(DynamicImportObfuscatorPass SHARED ${SOURCES})
+
+target_link_libraries(DynamicImportObfuscatorPass
+  PRIVATE
+  LLVMCore
+  LLVMSupport
+  LLVMIRReader
+  LLVMBitReader
+  LLVMAnalysis
+  LLVMTransformUtils
+  LLVMPasses
+)
+
+if (MSVC)
+  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+  set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MT")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+  set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MTd")
+endif()
+
+target_compile_definitions(DynamicImportObfuscatorPass PRIVATE LLVM_PLUGIN_API_VERSION=15)
+
+set_target_properties(DynamicImportObfuscatorPass PROPERTIES
+  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/Release"
+)

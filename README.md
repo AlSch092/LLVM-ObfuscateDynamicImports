@@ -21,16 +21,16 @@ The file `BuildAndRun.bat` is the recommended build method, and contains a full 
 
 A manual build process can be done by following these steps:  
 
-1. `mkdir build`
-2. `cd build`
-3. `cmake -G "Visual Studio 17 2022" -A x64 ..`
-4. `cmake --build . --config Release --target DynamicImportObfuscatorPass`
+1. `mkdir build`  
+2. `cd build`  
+3. `cmake -G "Visual Studio 17 2022" -A x64 ..`  
+4. `cmake --build . --config Release --target DynamicImportObfuscatorPass`  
 
- ** If you get an error about.. "LINK : fatal error LNK1181: cannot open input file 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\DIA SDK\lib\amd64\diaguids.lib' (See [LLVM GitHub Issue #86250](https://github.com/llvm/llvm-project/issues/86250))
-a) Open `build/DynamicImportObfuscatorPass.sln` in Visual Studio
-b) Select "Release" under current build configuration
-c) Right click on the DynamicImportObfuscatorPass project -> Click Properties -> Linker -> Input
-d) Under "Additional Dependencies", remove any references/lines to lib/amd64/diaguids.lib
+ ** If you get an error about.. "LINK : fatal error LNK1181: cannot open input file 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\DIA SDK\lib\amd64\diaguids.lib' (See [LLVM GitHub Issue #86250](https://github.com/llvm/llvm-project/issues/86250))  
+a) Open `build/DynamicImportObfuscatorPass.sln` in Visual Studio  
+b) Select "Release" under current build configuration  
+c) Right click on the DynamicImportObfuscatorPass project -> Click Properties -> Linker -> Input  
+d) Under "Additional Dependencies", remove any references/lines to lib/amd64/diaguids.lib  
 e) Close Visual Studio (save changes when prompted) and run the command at 4. again, or build the pass from within Visual Studio  
 
 ## Running the pass  

@@ -1,5 +1,5 @@
 # DynamicImports Obfuscation Transformative Pass - By AlSch092 @ Github
-This project implements an LLVM transformative obfuscation module pass to protect dynamically resolved Windows system calls. It was developed using the new pass manager  
+This project implements an LLVM transformative obfuscation module pass to protect dynamically resolved Windows system calls. It was developed using the new pass manager, and not tested in optimizations besides -O0. It's highly recommended you use the format seen in Example.cpp when using this pass, otherwise I can't guarantee it will work for you.   
 
 The project was built & tested using CMake with Visual Studio 2022 Build Tools, and was tested with LLVM/Clang version 20.1.3 on Windows 10 x64.  
 
@@ -85,20 +85,7 @@ Several changes can be seen in the binary & assembler code produced by compiling
 
 2. A string decryption loop (random key for each character of the string) is added before the call to `GetProcAddress` in `GetImportAddresses` using manual unfolding  
 
-3. Before storing import addresses into `g_ImportAddresses` in the `GetImportAddresses` function, the address is XORed with a random key (the full key is split into 2):   
-
-00007FF60B791D77 | mov edx,eax                                                 |  
-00007FF60B791D79 | shr rax,20                                                  |  
-00007FF60B791D7D | xor edx,6A0FDAA0                                            | high32 & low32 of 64-bit key  
-00007FF60B791D83 | xor eax,F71E3AD2                                            |  
-00007FF60B791D88 | mov eax,eax                                                 |  
-00007FF60B791D8A | shl rax,20                                                  |  
-00007FF60B791D8E | mov edx,edx                                                 |  
-00007FF60B791D90 | or rdx,rax                                                  |  
-00007FF60B791D93 | lea rax,qword ptr ds:[7FF60B7D4380]                         |  
-00007FF60B791D9A | mov qword ptr ds:[rax+rcx*8],rdx                            | <- move import address into `g_ImportAddresses`  
-
-...will cause values being stored in `g_ImportAddresses` to be obfuscated. Decryption never occurs in-place (only onto a stack-allocated location), so the encrypted value is not changed after being set.  
+3. Before storing import addresses into `g_ImportAddresses` in the `GetImportAddresses` function, the address is XORed with a random key (the full key is split into 2 hi32/low32 to make it a tiny bit less obvious). This will cause values being stored in `g_ImportAddresses` to be obfuscated. Decryption never occurs in-place (only onto a stack-allocated location), so the encrypted values are never changed or seen as plaintext after being set.  
 
 4. Calls to any dynamic imports are not direct - after the encrypted address is fetched from `GetImportAddress`, it's XORed with a key and called from [RSP+0xB8]  
 
@@ -106,7 +93,7 @@ Several changes can be seen in the binary & assembler code produced by compiling
 
 6. An opaque predicate with 100 randomized junk bytes are added to `GetImportAddress` to help obfuscate the return value of the function  
 
-7. No XOR instructions are used with full keys - they are either split into multiple instructions (OR + AND) or into high32 + low32 bits (XOR + XOR)  
+7. No explicit XOR instructions are used with full keys - they are either split into multiple instructions (OR + AND) or into high32 + low32 bits (XOR + XOR)  
 
 ## Result
 This pass makes it harder for attackers to:  

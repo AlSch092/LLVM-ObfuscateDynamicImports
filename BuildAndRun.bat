@@ -20,13 +20,13 @@ set OPT=%LLVM_BIN%\opt.exe
 set PASS_DLL=build\Release\DynamicImportObfuscatorPass.dll
 
 :: Test source file
-set SRC=LlvmTest.cpp
+set SRC=Example.cpp
 
 :: Working files
-set BC=LlvmTest.bc
-set LL=LlvmTest.ll
-set OUT_LL=LlvmTest_out.ll
-set EXE=LlvmTest.exe
+set BC=Example.bc
+set LL=Example.ll
+set OUT_LL=Example_out.ll
+set EXE=Example.exe
 
 echo [1/5] Compiling %SRC% to LLVM IR...
 %CLANG% -S -emit-llvm -O0 %SRC% -o %LL%
